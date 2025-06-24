@@ -4,3 +4,5 @@ Just playing around with GitHub Actions!
 This is a test.
 ### Test 2
 Another test!
+
+### Test 3
