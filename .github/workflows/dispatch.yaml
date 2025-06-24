@@ -14,9 +14,8 @@ jobs:
       - name: Check if commit message includes 'docs:'
         id: check
         run: |
-          COMMIT_MSG=$(git log -1)
-          COMMIT_MSG_ONLY=$(git log -1 --pretty=format:"%s")
-          if echo "$COMMIT_MSG_ONLY" | grep -iq '^docs:'; then
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          if echo "$COMMIT_MSG" | grep -iq '^docs:'; then
             echo "docs_commit=true" >> $GITHUB_ENV
             echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
           else
