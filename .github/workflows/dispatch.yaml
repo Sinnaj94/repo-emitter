@@ -1,0 +1,30 @@
+name: Dispatch to emitter on docs commit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-docs-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if commit message includes 'docs:'
+        id: check
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          if echo "$COMMIT_MSG" | grep -iq '^docs:'; then
+            echo "docs_commit=true" >> $GITHUB_ENV
+            echo "commit_msg=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          else
+            echo "docs_commit=false" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger the workflow
+        if: env.docs_commit == 'true'
+        run: |
+          echo "Got docs commit: ${{ steps.check.outputs.commit_msg }}"
+          curl -X POST https://api.github.com/repos/Sinnaj94/repo-listener/dispatches \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.PAT_TRIGGER }}" \
+            -d '{"event_type": "docs-commit", "client_payload": {"commit_msg": "${{ steps.check.outputs.commit_msg }}"}}'
